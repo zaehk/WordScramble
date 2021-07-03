@@ -59,7 +59,9 @@ struct ContentView: View {
             }
             .padding()
             .navigationTitle("WordScramble")
-            .navigationBarItems(trailing:  )
+            .navigationBarItems(trailing: Button(action: startGame, label: {
+                Image(systemName: "pencil.and.outline").foregroundColor(.blue)
+            }))
             .onAppear(perform: startGame)
             .alert(isPresented: $showingError, content: {
                 Alert(title: Text(errorTitle), message: Text(errorMessage), dismissButton: .default(Text("OK")))
@@ -70,11 +72,14 @@ struct ContentView: View {
     func startGame() {
         guard let startWordsURL = Bundle.main.url(forResource: "start", withExtension: "txt") else {
             fatalError("Could not load start.txt from bundle.")
-            return
         }
         if let startWords = try? String(contentsOf: startWordsURL) {
             let allWords = startWords.components(separatedBy: "\n")
-            rootWord = allWords.randomElement() ?? "silkworm"
+            withAnimation(.easeIn) {
+                rootWord = allWords.randomElement() ?? "silkworm"
+                usedWords.removeAll()
+                newWord.removeAll()
+            }
             
             return
         }
@@ -83,7 +88,6 @@ struct ContentView: View {
     func addNewWord() {
         let answer = newWord.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
         
-        //not empty
         guard answer.count > 0 else {
             return
         }
