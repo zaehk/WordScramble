@@ -7,13 +7,14 @@
 
 import SwiftUI
 
+
 struct WordView: View {
     
     var word: String
     @Binding var shuffleAmount: Double
     @State var shouldBounce: Bool
     
-    var wordBackgroundColor: Color
+    var wordColors: [Color]
     var borderColor: Color
     var wordSize: CGFloat
     
@@ -21,17 +22,17 @@ struct WordView: View {
         HStack {
             ForEach(Array(word.enumerated()), id: \.offset) { character in
                 
-                let animationDelay = Double(character.offset) / 20
+                let animationDelay = Double(character.offset) / 40
                 
                  Text(String(character.element).uppercased())
                     .fontWeight(.bold)
                     .frame(width: wordSize, height: wordSize, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)
-                    .background(wordBackgroundColor)
+                    
+                    .background(LinearGradient(gradient: Gradient(colors: wordColors), startPoint: .topLeading, endPoint: .bottomTrailing))
                     .cornerRadius(10)
                     .overlay(RoundedRectangle(cornerRadius: 10)
                                 .stroke(borderColor, lineWidth: 1))
                     .shadow(radius: 3)
-                    .animation(nil)
                     .scaleEffect(shouldBounce ? 0.3 : 1.0)
                     .animation(.interpolatingSpring(stiffness: 100, damping: 7).delay(animationDelay))
                     .rotation3DEffect(
@@ -39,6 +40,8 @@ struct WordView: View {
                         axis: (x: 0.0, y: 1.0, z: 0.0)
                     )
                     .animation(Animation.default.delay(animationDelay))
+                
+                
             }.onAppear{
                 shouldBounce = false
             }
@@ -59,12 +62,22 @@ struct ContentView: View {
     @State private var allWords : [String] = []
     @State private var totalScore: Int = 0
     
+    let rootWordColors : [Color] = [
+        Color.init(red: 242/255, green: 191/255, blue: 106/255),
+        Color.init(red: 244/255, green: 215/255, blue: 140/255)
+    ]
+    
+    let answerWordColors: [Color] = [
+        Color.init(red: 242/255, green: 250/255, blue: 248/255),
+        Color.init(red: 236/255, green: 232/255, blue: 220/255)
+    ]
+    
     var body: some View {
         
         NavigationView {
             VStack {
                 
-                WordView(word: rootWord,  shuffleAmount: $shuffleAmount, shouldBounce: false,  wordBackgroundColor: Color.init(red: 253/255, green: 209/255, blue: 113/255) , borderColor: Color.init(red: 166/255, green: 143/255, blue: 100/255), wordSize: 40)
+                WordView(word: rootWord,  shuffleAmount: $shuffleAmount, shouldBounce: false,  wordColors: rootWordColors , borderColor: Color.init(red: 166/255, green: 143/255, blue: 100/255), wordSize: 40)
                 
                 TextField("Enter your word", text: $newWord, onCommit: addNewWord)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
@@ -73,7 +86,7 @@ struct ContentView: View {
                 List(usedWords, id: \.self) {
                     Image(systemName: "\($0.count).circle")
                         .foregroundColor(.orange)
-                    WordView(word: $0, shuffleAmount: $shuffleAmount , shouldBounce: true, wordBackgroundColor: Color.init(UIColor.init(red: 238/255, green: 237/255, blue: 218/255, alpha: 1)), borderColor: .black, wordSize: 30)
+                    WordView(word: $0, shuffleAmount: $shuffleAmount , shouldBounce: true, wordColors: answerWordColors , borderColor: .black, wordSize: 30)
                 }
                 HStack{
                     Text("Total Score: \(totalScore)")
