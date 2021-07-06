@@ -10,14 +10,20 @@ import SwiftUI
 struct WordView: View {
     
     var word: String
+    @Binding var shuffleAmount: Double
+    @State var shouldBounce: Bool
+    
     var wordBackgroundColor: Color
     var borderColor: Color
     var wordSize: CGFloat
     
     var body: some View {
         HStack {
-            ForEach(word.uppercased().map({String($0)}), id: \.self) { letter in
-                Text(letter)
+            ForEach(Array(word.enumerated()), id: \.offset) { character in
+                
+                let animationDelay = Double(character.offset) / 20
+                
+                 Text(String(character.element).uppercased())
                     .fontWeight(.bold)
                     .frame(width: wordSize, height: wordSize, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)
                     .background(wordBackgroundColor)
@@ -25,7 +31,16 @@ struct WordView: View {
                     .overlay(RoundedRectangle(cornerRadius: 10)
                                 .stroke(borderColor, lineWidth: 1))
                     .shadow(radius: 3)
-                
+                    .animation(nil)
+                    .scaleEffect(shouldBounce ? 0.3 : 1.0)
+                    .animation(.interpolatingSpring(stiffness: 100, damping: 7).delay(animationDelay))
+                    .rotation3DEffect(
+                        .degrees(shuffleAmount),
+                        axis: (x: 0.0, y: 1.0, z: 0.0)
+                    )
+                    .animation(Animation.default.delay(animationDelay))
+            }.onAppear{
+                shouldBounce = false
             }
         }
     }
@@ -37,30 +52,33 @@ struct ContentView: View {
     @State private var usedWords = [String]()
     @State private var rootWord = ""
     @State private var newWord = ""
-    
     @State private var errorTitle = ""
     @State private var errorMessage = ""
     @State private var showingError = false
+    @State private var shuffleAmount: Double = 0
+    @State private var allWords : [String] = []
     
     var body: some View {
         
         NavigationView {
             VStack {
                 
-                WordView(word: rootWord, wordBackgroundColor: Color.init(red: 253/255, green: 209/255, blue: 113/255) , borderColor: Color.init(red: 166/255, green: 143/255, blue: 100/255), wordSize: 40)
+                WordView(word: rootWord,  shuffleAmount: $shuffleAmount, shouldBounce: false,  wordBackgroundColor: Color.init(red: 253/255, green: 209/255, blue: 113/255) , borderColor: Color.init(red: 166/255, green: 143/255, blue: 100/255), wordSize: 40)
                 
                 TextField("Enter your word", text: $newWord, onCommit: addNewWord)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .autocapitalization(.none)
+                
                 List(usedWords, id: \.self) {
                     Image(systemName: "\($0.count).circle")
-                    WordView(word: $0, wordBackgroundColor: Color.init(UIColor.init(red: 238/255, green: 237/255, blue: 218/255, alpha: 1)), borderColor: .black, wordSize: 30)
+                        .foregroundColor(.orange)
+                    WordView(word: $0, shuffleAmount: $shuffleAmount , shouldBounce: true, wordBackgroundColor: Color.init(UIColor.init(red: 238/255, green: 237/255, blue: 218/255, alpha: 1)), borderColor: .black, wordSize: 30)
                 }
             }
             .padding()
             .navigationTitle("WordScramble")
-            .navigationBarItems(trailing: Button(action: startGame, label: {
-                Image(systemName: "pencil.and.outline").foregroundColor(.blue)
+            .navigationBarItems(trailing: Button(action: resetRootword, label: {
+                Image(systemName: "pencil.and.outline").foregroundColor(.orange)
             }))
             .onAppear(perform: startGame)
             .alert(isPresented: $showingError, content: {
@@ -74,15 +92,19 @@ struct ContentView: View {
             fatalError("Could not load start.txt from bundle.")
         }
         if let startWords = try? String(contentsOf: startWordsURL) {
-            let allWords = startWords.components(separatedBy: "\n")
-            withAnimation(.easeIn) {
+                allWords = startWords.components(separatedBy: "\n")
                 rootWord = allWords.randomElement() ?? "silkworm"
                 usedWords.removeAll()
                 newWord.removeAll()
-            }
-            
             return
         }
+    }
+    
+    func resetRootword() {
+        rootWord = allWords.randomElement() ?? "silkworm"
+        shuffleAmount += 360
+        newWord.removeAll()
+        usedWords.removeAll()
     }
     
     func addNewWord() {
