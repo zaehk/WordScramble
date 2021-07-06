@@ -84,9 +84,14 @@ struct ContentView: View {
                     .autocapitalization(.none)
                 
                 List(usedWords, id: \.self) {
-                    Image(systemName: "\($0.count).circle")
-                        .foregroundColor(.orange)
                     WordView(word: $0, shuffleAmount: $shuffleAmount , shouldBounce: true, wordColors: answerWordColors , borderColor: .black, wordSize: 30)
+                    Image(systemName: "\($0.count).circle")
+                        .scaleEffect(CGSize(width: 1.5, height: 1.5))
+                        .foregroundColor(.white)
+                        .background(Color.green)
+                        .clipShape(Circle())
+                        .transition(.slide)
+                        .animation(.easeIn)
                 }
                 HStack{
                     Text("Total Score: \(totalScore)")
@@ -95,7 +100,10 @@ struct ContentView: View {
             .padding()
             .navigationTitle("WordScramble")
             .navigationBarItems(trailing: Button(action: resetRootword, label: {
-                Image(systemName: "pencil.and.outline").foregroundColor(.orange)
+                Image(systemName: "pencil.and.outline")
+                    .foregroundColor(.orange)
+                Text("New word")
+                    .foregroundColor(.orange)
             }))
             .onAppear(perform: startGame)
             .alert(isPresented: $showingError, content: {
