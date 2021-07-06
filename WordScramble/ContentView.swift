@@ -57,6 +57,7 @@ struct ContentView: View {
     @State private var showingError = false
     @State private var shuffleAmount: Double = 0
     @State private var allWords : [String] = []
+    @State private var totalScore: Int = 0
     
     var body: some View {
         
@@ -73,6 +74,9 @@ struct ContentView: View {
                     Image(systemName: "\($0.count).circle")
                         .foregroundColor(.orange)
                     WordView(word: $0, shuffleAmount: $shuffleAmount , shouldBounce: true, wordBackgroundColor: Color.init(UIColor.init(red: 238/255, green: 237/255, blue: 218/255, alpha: 1)), borderColor: .black, wordSize: 30)
+                }
+                HStack{
+                    Text("Total Score: \(totalScore)")
                 }
             }
             .padding()
@@ -132,7 +136,9 @@ struct ContentView: View {
         withAnimation(.linear) {
             usedWords.insert(answer, at: 0)
         }
+        
         newWord = ""
+        totalScore += answer.count
         
     }
     
@@ -176,5 +182,6 @@ struct ContentView: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
+            
     }
 }
