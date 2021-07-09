@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0068BD062697436700DAC24B /* KGWhatATime.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0068BD052697436700DAC24B /* KGWhatATime.ttf */; };
 		0078738926906C6C00A82086 /* WordScrambleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0078738826906C6C00A82086 /* WordScrambleApp.swift */; };
 		0078738B26906C6C00A82086 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0078738A26906C6C00A82086 /* ContentView.swift */; };
 		0078738D26906C6D00A82086 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0078738C26906C6D00A82086 /* Assets.xcassets */; };
@@ -15,6 +16,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0068BD052697436700DAC24B /* KGWhatATime.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = KGWhatATime.ttf; sourceTree = "<group>"; };
 		0078738526906C6C00A82086 /* WordScramble.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WordScramble.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0078738826906C6C00A82086 /* WordScrambleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordScrambleApp.swift; sourceTree = "<group>"; };
 		0078738A26906C6C00A82086 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -56,6 +58,7 @@
 			children = (
 				0078738826906C6C00A82086 /* WordScrambleApp.swift */,
 				007873972690757800A82086 /* start.txt */,
+				0068BD052697436700DAC24B /* KGWhatATime.ttf */,
 				0078738A26906C6C00A82086 /* ContentView.swift */,
 				0078738C26906C6D00A82086 /* Assets.xcassets */,
 				0078739126906C6D00A82086 /* Info.plist */,
@@ -130,6 +133,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0078739026906C6D00A82086 /* Preview Assets.xcassets in Resources */,
+				0068BD062697436700DAC24B /* KGWhatATime.ttf in Resources */,
 				007873982690757800A82086 /* start.txt in Resources */,
 				0078738D26906C6D00A82086 /* Assets.xcassets in Resources */,
 			);

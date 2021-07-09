@@ -24,7 +24,7 @@ struct WordView: View {
                 
                 let animationDelay = Double(character.offset) / 40
                 
-                 Text(String(character.element).uppercased())
+                Text(String(character.element).uppercased())
                     .fontWeight(.bold)
                     .frame(width: wordSize, height: wordSize, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)
                     
@@ -61,6 +61,8 @@ struct ContentView: View {
     @State private var shuffleAmount: Double = 0
     @State private var allWords : [String] = []
     @State private var totalScore: Int = 0
+    @State private var scoreAnimationAmount = 0.0
+    @State private var scoreAnimation: Bool = false
     
     let rootWordColors : [Color] = [
         Color.init(red: 242/255, green: 191/255, blue: 106/255),
@@ -83,18 +85,44 @@ struct ContentView: View {
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .autocapitalization(.none)
                 
-                List(usedWords, id: \.self) {
-                    WordView(word: $0, shuffleAmount: $shuffleAmount , shouldBounce: true, wordColors: answerWordColors , borderColor: .black, wordSize: 30)
-                    Image(systemName: "\($0.count).circle")
-                        .scaleEffect(CGSize(width: 1.5, height: 1.5))
-                        .foregroundColor(.white)
-                        .background(Color.green)
-                        .clipShape(Circle())
-                        .transition(.slide)
-                        .animation(.easeIn)
+                List(usedWords, id: \.self) { correctWord in
+                    HStack(alignment: .top, spacing: 0, content: {
+                        
+                        WordView(word: correctWord, shuffleAmount: $shuffleAmount , shouldBounce: true, wordColors: answerWordColors , borderColor: .black, wordSize: 30)
+                        
+                        
+                        Image(systemName: "\(correctWord.count).circle")
+                            .scaleEffect(CGSize(width: 1.5, height: 1.5))
+                            .foregroundColor(.white)
+                            .background(Color.green)
+                            .clipShape(Circle())
+                            .offset(x: -10, y: -8)
+                        
+                    })
+                    
                 }
+                
                 HStack{
-                    Text("Total Score: \(totalScore)")
+                    HStack{
+                        Text("SCORE ")
+                        Text("\(totalScore)")
+                            .scaleEffect(scoreAnimation ? 2 : 1)
+                            .rotation3DEffect(
+                                .degrees(scoreAnimationAmount),
+                                axis: (x: -1.0, y: 0.0, z: 0.0)
+                            )
+                    }
+                    .font(.title.bold())
+                    .foregroundColor(.white)
+                    .shadow(color: .black, radius: 2, x: 0, y: 2)
+                    .padding()
+                    .background(LinearGradient(gradient: Gradient(colors: rootWordColors), startPoint: .topLeading, endPoint: .bottomTrailing))
+                    .overlay(RoundedRectangle(cornerRadius: 10)
+                                .stroke(Color.orange, lineWidth: 6))
+                    .cornerRadius(10)
+                    .shadow(radius: 10)
+                    .scaleEffect(scoreAnimation ? 1.2 : 1)
+                    
                 }
             }
             .padding()
@@ -117,19 +145,20 @@ struct ContentView: View {
             fatalError("Could not load start.txt from bundle.")
         }
         if let startWords = try? String(contentsOf: startWordsURL) {
-                allWords = startWords.components(separatedBy: "\n")
-                rootWord = allWords.randomElement() ?? "silkworm"
-                usedWords.removeAll()
-                newWord.removeAll()
+            allWords = startWords.components(separatedBy: "\n")
+            rootWord = allWords.randomElement() ?? "silkworm"
+            usedWords.removeAll()
+            newWord.removeAll()
             return
         }
     }
     
     func resetRootword() {
         rootWord = allWords.randomElement() ?? "silkworm"
-        shuffleAmount += 360
+        shuffleAmount += 720
         newWord.removeAll()
         usedWords.removeAll()
+        totalScore = 0
     }
     
     func addNewWord() {
@@ -160,6 +189,16 @@ struct ContentView: View {
         
         newWord = ""
         totalScore += answer.count
+        withAnimation {
+            scoreAnimationAmount += 360
+            scoreAnimation = true
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            withAnimation(.interpolatingSpring(stiffness: 40, damping: 5).speed(2)) {
+                self.scoreAnimation.toggle()
+            }
+        }
         
     }
     
@@ -203,6 +242,6 @@ struct ContentView: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
-            
+        
     }
 }
